@@ -12,7 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Provider;
 import java.util.UUID;
 
@@ -20,8 +22,26 @@ import java.util.UUID;
 public class MyController {
 
     @RequestMapping("/index")
-    public String index(){
+    //验证index页面是否有cookie信息，做持久化登录
+    public String index(HttpServletRequest request){
+        //在页面中查找cookie信息
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("token")){
+                //和数据库中的token做比对
+                String token = cookie.getValue();
+                User user = userMapper.getUser(token);
+                if(user!=null){
+                    //在数据库中查到相关信息，就写入session让thmeleaf可以取到session值
+                    request.getSession().setAttribute("user", user);
+                }
+                break;
+            }
+        }
         return "index";
+
+
+
     }
 
 
@@ -44,7 +64,8 @@ public class MyController {
     @RequestMapping("/callback")
     public String callback(@RequestParam(name="code") String code,
                            @RequestParam(name="state") String state,
-                           HttpServletRequest request){
+                           HttpServletRequest request,
+                           HttpServletResponse response){
 
         AccessTokenDTO accessTokenDTO=new AccessTokenDTO();
         accessTokenDTO.setCode(code);
@@ -59,13 +80,14 @@ public class MyController {
             User user=new User();
             user.setName(githubUser.getName());
             user.setAccountId(String.valueOf(githubUser.getId()));
-            user.setToken(UUID.randomUUID().toString());
+            String token = UUID.randomUUID().toString();
+            user.setToken(token);
             user.setCreateTime(System.currentTimeMillis());
             user.setModifiedTime(user.getCreateTime());
             userMapper.inserUser(user);
 
-            //写入cookie，session
-            request.getSession().setAttribute("user", githubUser);
+            //写入cookie，写入数据库就相当于写session
+            response.addCookie(new Cookie("token", token));
             return "redirect:index";
         }
         else{
