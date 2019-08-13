@@ -4,11 +4,15 @@ package com.example.community.controller;
 import com.example.community.Provider.GithubProvider;
 import com.example.community.bean.GithubUser;
 import com.example.community.dto.AccessTokenDTO;
+import com.example.community.dto.PageDTO;
+import com.example.community.dto.QuestionDTO;
 import com.example.community.mapper.UserMapper;
 import com.example.community.model.User;
+import com.example.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,33 +20,14 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Provider;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
 public class MyController {
 
-    @RequestMapping("/index")
-    //验证index页面是否有cookie信息，做持久化登录
-    public String index(HttpServletRequest request){
-        //在页面中查找cookie信息
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("token")){
-                //和数据库中的token做比对
-                String token = cookie.getValue();
-                User user = userMapper.getUser(token);
-                if(user!=null){
-                    //在数据库中查到相关信息，就写入session让thmeleaf可以取到session值
-                    request.getSession().setAttribute("user", user);
-                }
-                break;
-            }
-        }
-        return "index";
-
-
-
-    }
+    @Autowired
+    QuestionService questionService;
 
 
     @Autowired
@@ -50,6 +35,37 @@ public class MyController {
 
     @Autowired
     UserMapper userMapper;
+
+
+    @RequestMapping("/")
+    //验证index页面是否有cookie信息，做持久化登录
+    public String index(HttpServletRequest request, Model model,
+                        @RequestParam(name = "page",defaultValue = "1") Integer page,
+                        @RequestParam(name="size" ,defaultValue = "3") Integer size) {
+        //在页面中查找cookie信息
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("token")) {
+                    //和数据库中的token做比对
+                    String token = cookie.getValue();
+                    User user = userMapper.getUser(token);
+                    if (user != null) {
+                        //在数据库中查到相关信息，就写入session让thmeleaf可以取到session值
+                        request.getSession().setAttribute("user", user);
+                    }
+                    break;
+                }
+            }
+        }
+        //将页数和每页显示的数量传给questionmapper，查询数据库，将结果返回给前端页面显示
+        PageDTO pageDTO = questionService.list(page, size);
+        model.addAttribute("pagedto",pageDTO );
+        return "index";
+
+
+    }
+
 
 
     @Value("${github.client.id}")  //从配置文件中注入变量值
@@ -84,14 +100,14 @@ public class MyController {
             user.setToken(token);
             user.setCreateTime(System.currentTimeMillis());
             user.setModifiedTime(user.getCreateTime());
-            userMapper.inserUser(user);
+            userMapper.insertUser(user);
 
             //写入cookie，写入数据库就相当于写session
             response.addCookie(new Cookie("token", token));
-            return "redirect:index";
+            return "redirect:/";
         }
         else{
-            return "redirect:index";
+            return "redirect:/";
         }
 
 
