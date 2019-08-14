@@ -25,9 +25,14 @@
                     </a>
                 </div>
                 <div class="media-body">
-                    <h4 class="media-heading" th:text="${questions.question.title}">如何快速学习springboot</h4>
+                    <h4 class="media-heading">
+                        <a th:href="@{'/question/'+ ${questions.question.id}}" th:text="${questions.question.title}">
+                        </a>
+                    </h4>
                     <span th:text="${questions.question.description}"></span><br>
-                    <span >3个回复~31次浏览~<span th:text="${#dates.format(questions.question.createTime,'yyyy-MM-dd HH:mm')}"></span></span>
+                    <span th:text="${questions.question.commentNumber}?'${questions.question.commentNumber}':'0'"></span> 个回复 • <span
+                        th:text="${questions.question.viewCount}?'${questions.question.viewCount}':'0'"></span> 次浏览 • <span
+                        th:text="${#dates.format(questions.question.createTime,'yyyy-MM-dd HH:mm')}"></span></span>
                 </div>
             </div>
             <nav aria-label="Page navigation">

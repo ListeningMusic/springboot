@@ -1,16 +1,16 @@
 package com.example.community.controller;
 
 
+import com.example.community.dto.QuestionDTO;
 import com.example.community.mapper.QuestionMapper;
 import com.example.community.mapper.UserMapper;
 import com.example.community.model.Question;
 import com.example.community.model.User;
+import com.example.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -19,8 +19,10 @@ import javax.sound.midi.SysexMessage;
 @Controller
 public class PublishController {
 
+
+
     @Autowired
-    QuestionMapper questionMapper;
+    QuestionService questionService;
 
     @Autowired
     UserMapper userMapper;
@@ -32,29 +34,13 @@ public class PublishController {
 
 
     @PostMapping("/publish")
-    public String dopublish(@RequestParam("title") String title,
-                            @RequestParam("description") String description,
-                            @RequestParam("tag") String tag,
+    public String dopublish(@RequestParam(value="title" ,required = false) String title,
+                            @RequestParam(value="description",required = false) String description,
+                            @RequestParam(value="tag",required = false) String tag,
+                            @RequestParam(value="id",required = false) Integer id,
                             HttpServletRequest request,
                             Model model){
-        System.out.println("执行了");
-        User user=null;
-        //验证用户的cookie信息
-
-        if(request.getCookies()!=null){
-            Cookie[] cookies = request.getCookies();
-            for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("token")){
-                //和数据库中的token做比对
-                String token = cookie.getValue();
-                user = userMapper.getUser(token);
-                if(user!=null){
-                    //在数据库中查到相关信息，就写入session让thmeleaf可以取到session值
-                    request.getSession().setAttribute("user", user);
-                }
-                break;
-            }
-        }}
+        User user = (User)request.getSession().getAttribute("user");
 
         if(user==null){
             model.addAttribute("error","用户未登录" );
@@ -68,10 +54,22 @@ public class PublishController {
         question.setCreateTime(System.currentTimeMillis());
         question.setModifiedTime(question.getCreateTime());
         question.setCreatorId(user.getId());
-
-
-
-        questionMapper.create(question);
+        question.setId(id);
+        questionService.createOrUpdate(question);
         return "redirect:/";
     }
+
+    @GetMapping("/publish/{id}")
+    public String edit(@PathVariable("id") Integer id,
+                       Model model){
+        QuestionDTO questionDTO = questionService.getById(id);
+        model.addAttribute("title", questionDTO.getQuestion().getTitle());
+        model.addAttribute("description", questionDTO.getQuestion().getDescription());
+        model.addAttribute("tag", questionDTO.getQuestion().getTag());
+       model.addAttribute("id", questionDTO.getQuestion().getId());
+
+        return "publish";
+    }
+
+
 }

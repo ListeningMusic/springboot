@@ -15,6 +15,7 @@ public class Question {
     private Integer commentNumber;
     private Integer likeNumber;
     private String tag;
+    private Long viewCount;
 
 
 }

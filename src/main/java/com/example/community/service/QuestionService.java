@@ -73,4 +73,28 @@ public class QuestionService {
 
         return pageDTO;
     }
+
+    public QuestionDTO getById(Integer id) {
+        Question question=questionMapper.getById(id);
+        QuestionDTO questionDTO =new QuestionDTO();
+        questionDTO.setQuestion(question);
+        User user = userMapper.findById(question.getCreatorId());
+        questionDTO.setUser(user);
+        return questionDTO;
+    }
+
+    public void createOrUpdate(Question question) {
+        if(question.getId()==null){
+            //第一次创建
+            question.setCreateTime(System.currentTimeMillis());
+            question.setModifiedTime(question.getCreateTime());
+            questionMapper.create(question);
+
+        }else{
+            //更新
+            question.setModifiedTime(System.currentTimeMillis());
+            questionMapper.update(question);
+
+        }
+    }
 }

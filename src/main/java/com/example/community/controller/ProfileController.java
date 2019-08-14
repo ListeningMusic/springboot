@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -33,23 +32,8 @@ public class ProfileController {
                           Model model,
                           @RequestParam(name = "page",defaultValue = "1") Integer page,
                           @RequestParam(name="size" ,defaultValue = "3") Integer size){
-        User user=null;
-        //在页面中查找cookie信息
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("token")) {
-                    //和数据库中的token做比对
-                    String token = cookie.getValue();
-                    user = userMapper.getUser(token);
-                    if (user != null) {
-                        //在数据库中查到相关信息，就写入session让thmeleaf可以取到session值
-                        request.getSession().setAttribute("user", user);
-                    }
-                    break;
-                }
-            }
-        }
+
+        User user = (User)request.getSession().getAttribute("user");
 
         if(user==null){
             return "redirect:/";

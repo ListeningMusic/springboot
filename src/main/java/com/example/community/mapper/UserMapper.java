@@ -2,10 +2,7 @@ package com.example.community.mapper;
 
 
 import com.example.community.model.User;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface UserMapper {
@@ -20,4 +17,11 @@ public interface UserMapper {
     @Select("select * from testdb where id = #{creatorId}")
     User findById(@Param("creatorId") Integer creatorId);
 
+
+    @Select("select * from testdb where account_id = #{accountId}")
+    User getUserByAccountId(@Param("accountId") String accountId);
+
+
+    @Update("update testdb set name=#{name},token=#{token},create_time=#{createTime},modified_time=#{modifiedTime} where id=#{id}")
+    void update(User user);
 }
