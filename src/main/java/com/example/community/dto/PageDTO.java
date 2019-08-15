@@ -14,11 +14,11 @@ public class PageDTO {
     private boolean showFirstPage;
     private boolean showNext;
     private boolean showEndPage;
-    private Integer page;//记录当前页的页数
-    private List<Integer> pages=new ArrayList<>();//需要在列表中展示的页
-    Integer totalPage ;//总页数
+    private Long page;//记录当前页的页数
+    private List<Long> pages=new ArrayList<>();//需要在列表中展示的页
+    Long totalPage ;//总页数
 
-    public void setPagination(Integer totalCount,Integer page,Integer size){
+    public void setPagination(Long totalCount,Long page,Integer size){
         this.page=page;//把当前点击的页数 传给pagedto的page属性
 
 

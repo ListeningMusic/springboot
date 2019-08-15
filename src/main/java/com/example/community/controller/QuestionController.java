@@ -21,8 +21,12 @@ public class QuestionController {
     public String question(@PathVariable("id") Integer id,
                            Model model){
 
-
+        //更新操作在查询之前，保证浏览次数正确
+        questionService.addoneView(id);
         QuestionDTO questionDTO = questionService.getById(id);
+        //每次进入此链接，就累加一次阅读数
+
+
         model.addAttribute("question", questionDTO);
 
 

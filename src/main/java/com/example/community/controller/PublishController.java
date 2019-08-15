@@ -2,7 +2,6 @@ package com.example.community.controller;
 
 
 import com.example.community.dto.QuestionDTO;
-import com.example.community.mapper.QuestionMapper;
 import com.example.community.mapper.UserMapper;
 import com.example.community.model.Question;
 import com.example.community.model.User;
@@ -12,9 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.sound.midi.SysexMessage;
 
 @Controller
 public class PublishController {
@@ -56,6 +53,7 @@ public class PublishController {
         question.setCreatorId(user.getId());
         question.setId(id);
         questionService.createOrUpdate(question);
+
         return "redirect:/";
     }
 

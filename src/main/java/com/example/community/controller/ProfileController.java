@@ -30,7 +30,7 @@ public class ProfileController {
     public String profile(@PathVariable(name = "action") String action,
                           HttpServletRequest request,
                           Model model,
-                          @RequestParam(name = "page",defaultValue = "1") Integer page,
+                          @RequestParam(name = "page",defaultValue = "1") Long page,
                           @RequestParam(name="size" ,defaultValue = "3") Integer size){
 
         User user = (User)request.getSession().getAttribute("user");
