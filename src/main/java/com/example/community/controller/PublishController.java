@@ -34,7 +34,7 @@ public class PublishController {
     public String dopublish(@RequestParam(value="title" ,required = false) String title,
                             @RequestParam(value="description",required = false) String description,
                             @RequestParam(value="tag",required = false) String tag,
-                            @RequestParam(value="id",required = false) Integer id,
+                            @RequestParam(value="id",required = false) Long id,
                             HttpServletRequest request,
                             Model model){
         User user = (User)request.getSession().getAttribute("user");
@@ -52,13 +52,16 @@ public class PublishController {
         question.setModifiedTime(question.getCreateTime());
         question.setCreatorId(user.getId());
         question.setId(id);
+        question.setLikeNumber(0);
+        question.setViewCount(0);
+        question.setCommentNumber(0);
         questionService.createOrUpdate(question);
 
         return "redirect:/";
     }
 
     @GetMapping("/publish/{id}")
-    public String edit(@PathVariable("id") Integer id,
+    public String edit(@PathVariable("id") Long id,
                        Model model){
         QuestionDTO questionDTO = questionService.getById(id);
         model.addAttribute("title", questionDTO.getQuestion().getTitle());

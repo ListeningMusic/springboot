@@ -17,3 +17,5 @@ A new database is automatically created
 flyway :数据库版本控制工具
 
 ##社区
+
+mvn -Dmybatis.generator.overwrite=true mybatis-generator:generate

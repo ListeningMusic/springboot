@@ -53,7 +53,7 @@ public class QuestionService {
     }
 
 
-    public PageDTO list(Integer userId, Long page, Integer size) {
+    public PageDTO list(Long userId, Long page, Integer size) {
 
 
         //分页查询公式 第一页应该查询到的数据
@@ -80,7 +80,7 @@ public class QuestionService {
         return pageDTO;
     }
 
-    public QuestionDTO getById(Integer id) {
+    public QuestionDTO getById(Long id) {
         Question question = questionMapper.selectByPrimaryKey(id);
         if(question==null){
             throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
@@ -108,11 +108,11 @@ public class QuestionService {
         }
     }
 
-    public void addoneView(Integer id) {
+    public void addoneView(Long id) {
         //将数据库中值null的该为数值1
         Question questionById = questionMapper.selectByPrimaryKey(id);
         if(questionById.getViewCount()==null){
-            questionById.setViewCount(1);
+            questionById.setViewCount(0);
             QuestionExample example = new QuestionExample();
             example.createCriteria().andIdEqualTo(id);
             questionMapper.updateByExampleSelective(questionById, example);

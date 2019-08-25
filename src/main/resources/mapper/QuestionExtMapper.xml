@@ -26,4 +26,11 @@
     where id=#{id}
   </update>
 
+  <update id="incCommentCount" parameterType="com.example.community.model.Question">
+    update question
+    set
+       comment_number = comment_number + #{commentNumber,jdbcType=INTEGER}
+    where id = #{id}
+  </update>
+
 </mapper>

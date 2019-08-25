@@ -1,14 +1,14 @@
 package com.example.community.exception;
 
 public class CustomizeException extends RuntimeException {
+//自定义异常类
 
     private String message;
+    private Integer code;
 
-    public CustomizeException(String message){
-        this.message=message;
-    }
-    public CustomizeException(ICustomizeErrorCode errorCode){
-        this.message=errorCode.getMessage();
+    public CustomizeException(ICustomizeErrorCode errorCode) {
+        this.code = errorCode.getCode();
+        this.message = errorCode.getMessage();
     }
 
     @Override
@@ -16,7 +16,7 @@ public class CustomizeException extends RuntimeException {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public Integer getCode() {
+        return code;
     }
 }
